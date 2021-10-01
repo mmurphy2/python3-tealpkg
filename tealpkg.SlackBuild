@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# Slackware build script for tealpkg
+#
+# Copyright 2021 Coastal Carolina University
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+PRGNAM=tealpkg
+SRCNAM="$PRGNAM"
+VERSION=${VERSION:-@VERSION@}
+BUILD=${BUILD:-1}
+TAG=${TAG:-1}
+
+# Documentation files found inside the source package (adjust as needed)
+DOCUMENTATION="README.md LICENSE doc/repos doc/scripts tealpkg.SlackBuild"
+
+# Automatically determine the architecture we're building on:
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+    # Unless $ARCH is already set, use uname -m for all other archs:
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+CWD=$(pwd)
+TMP=${TMP:-/tmp/build-tealpkg}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+rm -rf $SRCNAM-$VERSION
+tar xvf $CWD/$SRCNAM-$VERSION.tar.?z
+cd $SRCNAM-$VERSION
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+site=$(python3 -c "import fnmatch; import sys; print(fnmatch.filter(sys.path, '*/site-packages')[0])")
+[[ -z "${site}" ]] && exit 1
+mkdir -p ${PKG}${site}/tealpkg/command
+
+for item in $(find src/tealpkg -maxdepth 1 -type f -printf '%f\n'); do
+    install -Dpm 0644 "src/tealpkg/${item}" "${PKG}${site}/tealpkg/${item}"
+done
+
+for item in $(find src/tealpkg/command -maxdepth 1 -type f -printf '%f\n'); do
+    install -Dpm 0644 "src/tealpkg/command/${item}" "${PKG}${site}/tealpkg/command/${item}"
+done
+
+mkdir -p ${PKG}/usr/sbin
+install -Dpm 0755 src/main.py ${PKG}/usr/sbin/tealpkg
+
+mkdir -p ${PKG}/etc/tealpkg/{repos,scripts}
+install -Dpm 0644 conf/tealpkg.ini ${PKG}/etc/tealpkg/tealpkg.ini.new
+install -Dpm 0644 conf/exclude.list ${PKG}/etc/tealpkg/exclude.list.new
+
+install -Dpm 0644 doc/repos/slackware-main.ini ${PKG}/etc/tealpkg/repos/slackware-main.ini.new
+install -Dpm 0644 doc/repos/slackware-extra.ini ${PKG}/etc/tealpkg/repos/slackware-extra.ini.new
+install -Dpm 0644 doc/repos/slackware-pasture.ini ${PKG}/etc/tealpkg/repos/slackware-pasture.ini.new
+install -Dpm 0644 doc/repos/slackware-patches.ini ${PKG}/etc/tealpkg/repos/slackware-patches.ini.new
+install -Dpm 0644 doc/repos/slackware-testing.ini ${PKG}/etc/tealpkg/repos/slackware-testing.ini.new
+install -Dpm 0644 doc/repos/slackware.mirrors ${PKG}/etc/tealpkg/repos/slackware.mirrors.new
+
+if [[ "${ARCH}" == "x86_64" ]]; then
+    install -Dpm 0644 doc/repos/alienbob-multilib.ini ${PKG}/etc/tealpkg/repos/alienbob-multilib.ini.new
+    install -Dpm 0644 doc/repos/alienbob.mirrors ${PKG}/etc/tealpkg/repos/alienbob.mirrors.new
+fi
+
+mkdir -p ${PKG}/var/cache/tealpkg
+mkdir -p ${PKG}/var/log/tealpkg
+
+cp -a man ${PKG}/usr/man
+find $PKG/usr/man -type f -exec gzip -9 {} \;
+for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; rm $i ; done
+
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+cp -a $DOCUMENTATION $PKG/usr/doc/$PRGNAM-$VERSION
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+
+if [ -f $CWD/doinst.sh ]; then
+    cat $CWD/doinst.sh > $PKG/install/doinst.sh
+fi
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz}

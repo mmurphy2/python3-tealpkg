@@ -1,0 +1,109 @@
+#!/usr/bin/python3
+#
+# Generates the slackware.mirrors file using mirrors.slackware.com, writing to
+# standard output.
+#
+# Copyright 2021 Coastal Carolina University
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+
+import html.parser
+import time
+
+from urllib.parse import urlparse
+from urllib.request import urlopen
+
+
+class MirrorParser(html.parser.HTMLParser):
+    def __init__(self):
+        html.parser.HTMLParser.__init__(self)
+        self.in_pre = False
+        self.last_data = ''
+        self.mirrors = {}
+    #
+    def handle_starttag(self, tag, attrs):
+        if tag == 'pre':
+            self.in_pre = True
+        elif tag == 'a' and self.in_pre:
+            country = self.last_data.strip()
+            mirror = ''
+            for name, value in attrs:
+                if name == 'href':
+                    mirror = value
+                    break
+            #####
+            scheme = urlparse(mirror).scheme
+            if scheme in self.mirrors:
+                if country in self.mirrors[scheme]:
+                    self.mirrors[scheme][country].append(mirror)
+                else:
+                    self.mirrors[scheme][country] = [ mirror ]
+                #
+            else:
+                self.mirrors[scheme] = { country: [ mirror ] }
+            #
+        #
+        self.last_data = ''
+    #
+    def handle_endtag(self, tag):
+        if tag == 'pre':
+            self.in_pre = False
+            self.last_data = ''
+        #
+    #
+    def handle_data(self, data):
+        if self.in_pre:
+            self.last_data = data
+        #
+    #
+#
+
+
+data = ''
+with urlopen('https://mirrors.slackware.com/mirrorlist') as fh:
+    data = fh.read().decode('utf-8')
+#
+
+parser = MirrorParser()
+parser.feed(data)
+
+print('# tealpkg Slackware repository mirror list')
+print('# Generated', time.strftime('%a %b %d %Y %H:%M:%S UTC', time.gmtime()))
+print()
+print()
+print('#' * 79)
+print('### mirrors.slackware.com may redirect either to HTTP or HTTPS')
+print('#' * 79)
+print()
+print('# https://mirrors.slackware.com/slackware/')
+
+
+for scheme in parser.mirrors:
+    print()
+    print()
+    print('#' * 79)
+    print('###', 'Protocol:', scheme.upper())
+    print('#' * 79)
+    for country in parser.mirrors[scheme]:
+        print()
+        print('##', 'Country:', country)
+        for url in parser.mirrors[scheme][country]:
+            print('#', url)
+#########
