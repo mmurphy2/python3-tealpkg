@@ -1,7 +1,4 @@
-# Original TODO
-
-Please note that this project has been abandoned. The following items were on the TODO list at the end of the project.
-These are left as exercises for anyone who would like to fork the code (MIT licensed).
+# TODO
 
 - Add ChangeLog support
 - Add a --download-only option (in addition to the dry run) - might be better to have a download command, instead
@@ -15,4 +12,7 @@ These are left as exercises for anyone who would like to fork the code (MIT lice
 - Tweak colors
 - Add a TUI for interactive mode (if designed correctly, a GUI should also be possible)
 - Parse the MANIFEST and PACKAGES files directly into a SQLite DB, instead of the current pickling approach, so
-  that searches can be done as faster SQL queries
+  that searches can be done as faster SQL queries (alternatively, use a filesystem-based hierarchy of metadata)
+- Integrate Flatpak support for desktop convenience
+- Add port/build system for building packages from SlackBuilds (rewrite and add TealBuild, perhaps as a separate
+  command)

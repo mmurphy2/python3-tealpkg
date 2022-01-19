@@ -2,8 +2,7 @@
 
 TealPkg: Package management frontend for [Slackware Linux](http://www.slackware.com)
 
-NOTE: This project has been ABANDONED. However, this code is available under an MIT license for anyone who would like
-to use it as a basis for their own package management tool.
+It isn't quite dead :).
 
 
 ## About this Code
@@ -28,8 +27,8 @@ here in GitHub), I determined that Bash was **not** the language to use for this
 limiting the use of add-on packages to those which were available in the official repositories for Slackware -current at
 the time (15.0).
 
-TealPkg was approaching feature parity with Slackpkg as of the time of abandonment. In addition, it was written with
-several additional major features:
+TealPkg was approaching feature parity with Slackpkg as of the time of the end of the 2021 study. In addition, it was
+written with several additional major features:
 
 1. Logging was partially implemented, with the objective of having complete transaction logs.
 2. GPG checks were significantly hardened compared to Slackpkg, with key fingerprints and official public key
@@ -42,8 +41,9 @@ Although ensuring that TealPkg could replace Slackpkg was a design objective, th
 not build upon Slackpkg (which is written in shell script anyway). The CLI for TealPkg also follows that of Yum/DNF, since
 the software was created with the intent of supporting refugees from CentOS after the CentOS Stream announcement.
 
-Someone willing to develop Python code could fork this project and make a pretty nice package manager for Slackware, LFS,
-or really any other distribution.
+In early 2022, I found another use case for the Slackware distribution as a desktop OS. On the desktop, the software stack
+can be supplemented with Flatpak packages in a manner similar to the approach taken by the KDE Neon distribution. Accordingly,
+development of TealPkg has resumed, at least slowly.
 
 
 ## Original Description
