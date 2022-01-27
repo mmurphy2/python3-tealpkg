@@ -1,4 +1,7 @@
-# Copyright 2021 Coastal Carolina University
+#
+# Function for parsing the Slackware MANIFEST.bz2 file.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -21,12 +24,14 @@
 import bz2
 import pathlib
 
+from .pkgtools import splitpkg
+
 
 def parse_manifest(path_to_manifest):
     manifest = {}
     file_map = {}
 
-    name = ''
+    info = None
 
     with bz2.open(path_to_manifest, 'rt') as fh:
         line = fh.readline()
@@ -35,13 +40,14 @@ def parse_manifest(path_to_manifest):
                 lparts = line.split()
                 if len(lparts) == 3:
                     pkgfile = pathlib.PurePosixPath(lparts[2])
-                    pieces = pkgfile.stem.split('-')
-                    name = '-'.join(pieces[0:-3])
-                    manifest[name] = {}
+                    info = splitpkg(pkgfile.stem)
+                    if info:
+                        manifest[info.name] = {}
+                    #
                 #
             else:
                 lparts = line.split()
-                if name and (len(lparts) >= 6):
+                if info and (len(lparts) >= 6):
                     entry = {}
                     entry['permissions'] = lparts[0]
                     entry['owner'] = lparts[1].split('/')[0]
@@ -52,12 +58,12 @@ def parse_manifest(path_to_manifest):
                     path = '/' + line.partition(entry['time'])[2].strip()
 
                     if path != '/./' and not path.startswith('/install/'):
-                        manifest[name][path] = entry
+                        manifest[info.name][path] = entry
 
                         if path in file_map:
-                            file_map[path].append(name)
+                            file_map[path].append(info.name)
                         else:
-                            file_map[path] = [ name ]
+                            file_map[path] = [ info.name ]
                         #
                     #
                 #

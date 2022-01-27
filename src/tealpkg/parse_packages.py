@@ -1,3 +1,6 @@
+#
+# Function to parse the Slackware PACKAGES.TXT file.
+#
 # Copyright 2021 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +27,7 @@ import pathlib
 import time
 
 from .package import Package
+from .pkgtools import splitpkg
 from .size import parse_size
 
 
@@ -38,11 +42,12 @@ def parse_packages(path_to_packages, repoid='', extract_groups=False, strip_path
                 timestamp = calendar.timegm(time.strptime(' '.join(line.split()[1:]), '%a %b %d %H:%M:%S %Z %Y'))
             elif line.startswith('PACKAGE NAME: '):
                 pkgfile = pathlib.PurePosixPath(line.split()[2])
-                pieces = pkgfile.stem.split('-')
-                name = '-'.join(pieces[0:-3])
-                package = Package(name, pieces[-3], pieces[-2], pieces[-1])
-                package.repo = repoid
-                result[name] = package
+                info = splitpkg(pkgfile.stem)
+                if info:
+                    package = Package(info.name, info.version, info.architecture, info.build)
+                    package.repo = repoid
+                    result[info.name] = package
+                #
             elif package:
                 if line.startswith('PACKAGE LOCATION: '):
                     pkgpath = pathlib.PurePosixPath(line.split()[2])
@@ -56,11 +61,11 @@ def parse_packages(path_to_packages, repoid='', extract_groups=False, strip_path
                     package.csize = parse_size(' '.join(line.split()[3:]))
                 elif line.startswith('PACKAGE SIZE (uncompressed): '):
                     package.usize = parse_size(' '.join(line.split()[3:]))
-                elif line.startswith(name + ': '):
+                elif line.startswith(info.name + ': '):
                     if len(package.desc) == 0:
                         package.short = line.partition('(')[2].rpartition(')')[0].strip()
                     #
-                    package.desc.append(line.removeprefix(name + ': ').strip())
+                    package.desc.append(line.removeprefix(info.name + ': ').strip())
                 elif line == '\n':
                     package = None
                 #

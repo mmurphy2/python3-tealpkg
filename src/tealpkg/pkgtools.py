@@ -1,4 +1,8 @@
-# Copyright 2021 Coastal Carolina University
+#
+# Python interface to Slackware pkgtools, plus helper functions related to
+# Slackware package name and version information.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,7 +23,10 @@
 # IN THE SOFTWARE.
 
 
+import collections
 import logging
+import os.path
+import re
 import shlex
 import subprocess
 import time
@@ -30,6 +37,30 @@ from .run import log_run
 INSTALLPKG = '/sbin/upgradepkg --install-new'
 UPGRADEPKG = '/sbin/upgradepkg'
 REMOVEPKG = '/sbin/removepkg'
+
+PKG_EXT = re.compile('.*\.t[a-z]z$')
+
+
+def splitpkg(filename):
+    '''
+    Splits a package into parts. Returns a named tuple for a valid package filename
+    (or basename). Returns None if the package name is invalid.
+    '''
+    result = None
+
+    # Strip off the file extension if we were given a package name
+    if PKG_EXT.match(filename):
+        filename = filename[0:-4]
+    #
+
+    pieces = os.path.basename(filename).split('-')
+    if len(pieces) >= 4:
+        PackageInfo = collections.namedtuple('PackageInfo', ['name', 'version', 'architecture', 'build'])
+        result = PackageInfo('-'.join(pieces[0:-3], pieces[-3], pieces[-2], pieces[-1]))
+    #
+
+    return result
+#
 
 
 class Pkgtools:

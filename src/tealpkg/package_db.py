@@ -1,5 +1,8 @@
 #
-# Copyright 2021 Coastal Carolina University
+# Function for loading the system installed package database, which is normally
+# the directory /var/lib/pkgtools.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -22,7 +25,9 @@
 
 import pathlib
 
+from .colorprint import cprint
 from .package import Package
+from .pkgtools import splitpkg
 from .size import parse_size
 
 
@@ -31,41 +36,44 @@ def load_package_db(path):
     file_map = {}
 
     for item in sorted(pathlib.Path(path).glob('*')):
-        parts = item.name.split('-')
-        name = '-'.join(parts[0:-3])
-        package = Package(name, parts[-3], parts[-2], parts[-1])
-        package_map[name] = package
+        info = splitpkg(item.name)
+        if info:
+            package = Package(info.name, info.version, info.architecture, info.build)
+            package_map[info.name] = package
 
-        with open(item.as_posix(), 'r') as fh:
-            line = fh.readline()
-            in_file_list = False
+            with open(item.as_posix(), 'r') as fh:
+                line = fh.readline()
+                in_file_list = False
 
-            while line:
-                if line.startswith('COMPRESSED PACKAGE SIZE: '):
-                    package.csize = parse_size(line.removeprefix('COMPRESSED PACKAGE SIZE: ').strip())
-                elif line.startswith('UNCOMPRESSED PACKAGE SIZE: '):
-                    package.usize = parse_size(line.removeprefix('UNCOMPRESSED PACKAGE SIZE: ').strip())
-                elif line.startswith(name + ': '):
-                    if len(package.desc) == 0:
-                        package.short = line.removeprefix(name + ': ').partition('(')[2].rpartition(')')[0].strip()
-                    #
-                    package.desc.append(line.removeprefix(name + ': ').strip())
-                elif line.startswith('FILE LIST:'):
-                    in_file_list = True
-                elif in_file_list:
-                    fpath = '/' + line.strip()
-                    if fpath != '/./' and not fpath.startswith('/install/'):
-                        package.files.append(fpath)
+                while line:
+                    if line.startswith('COMPRESSED PACKAGE SIZE: '):
+                        package.csize = parse_size(line.removeprefix('COMPRESSED PACKAGE SIZE: ').strip())
+                    elif line.startswith('UNCOMPRESSED PACKAGE SIZE: '):
+                        package.usize = parse_size(line.removeprefix('UNCOMPRESSED PACKAGE SIZE: ').strip())
+                    elif line.startswith(info.name + ': '):
+                        if len(package.desc) == 0:
+                            package.short = line.removeprefix(info.name + ': ').partition('(')[2].rpartition(')')[0].strip()
+                        #
+                        package.desc.append(line.removeprefix(info.name + ': ').strip())
+                    elif line.startswith('FILE LIST:'):
+                        in_file_list = True
+                    elif in_file_list:
+                        fpath = '/' + line.strip()
+                        if fpath != '/./' and not fpath.startswith('/install/'):
+                            package.files.append(fpath)
 
-                        if fpath in file_map:
-                            file_map[fpath].append(name)
-                        else:
-                            file_map[fpath] = [ name ]
+                            if fpath in file_map:
+                                file_map[fpath].append(info.name)
+                            else:
+                                file_map[fpath] = [ info.name ]
+                            #
                         #
                     #
+                    line = fh.readline()
                 #
-                line = fh.readline()
             #
+        else:
+            cprint('Invalid filename in ' + str(path) + ':', item, style='warning', stderr=True)
         #
     #
 
