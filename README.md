@@ -2,7 +2,11 @@
 
 TealPkg: Package management frontend for [Slackware Linux](http://www.slackware.com)
 
-It isn't quite dead :).
+~~It isn't quite dead :).~~
+
+OK, he's dead, Jim. I realized the code needs a major refactoring anyway, so now is the chance to make major changes,
+since nobody is really using it anyway. The new repository is at
+[https://github.com/mmurphy2/tealpkg](https://github.com/mmurphy2/tealpkg).
 
 
 ## About this Code
