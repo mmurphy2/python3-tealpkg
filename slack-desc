@@ -12,7 +12,7 @@ tealpkg: TealPkg is a powerful and flexible package manager for Slackware
 tealpkg: Linux, which incorporates some of the best features of package
 tealpkg: managers from other distributions. Features include automatic
 tealpkg: metadata expiration and retrieval, hardened GPG verification,
-tealpkg: transaction logging, and flexible file and pakacge search functions.
+tealpkg: transaction logging, and flexible file and package search functions.
 tealpkg:
 tealpkg: Homepage: TBD
 tealpkg:

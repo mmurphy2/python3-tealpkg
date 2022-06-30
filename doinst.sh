@@ -20,8 +20,3 @@ config etc/tealpkg/repos/slackware-pasture.ini.new
 config etc/tealpkg/repos/slackware-patches.ini.new
 config etc/tealpkg/repos/slackware-testing.ini.new
 config etc/tealpkg/repos/slackware.mirrors.new
-
-if [ -f etc/tealpkg/repos/alienbob-multilib.ini.new ]; then
-    config etc/tealpkg/repos/alienbob-multilib.ini.new
-    config etc/tealpkg/repos/alienbob.mirrors.new
-fi

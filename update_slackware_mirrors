@@ -3,7 +3,7 @@
 # Generates the slackware.mirrors file using mirrors.slackware.com, writing to
 # standard output.
 #
-# Copyright 2021 Coastal Carolina University
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -50,14 +50,16 @@ class MirrorParser(html.parser.HTMLParser):
                     break
             #####
             scheme = urlparse(mirror).scheme
-            if scheme in self.mirrors:
-                if country in self.mirrors[scheme]:
-                    self.mirrors[scheme][country].append(mirror)
+            if scheme.lower() in ('http', 'https', 'ftp'):
+                if scheme in self.mirrors:
+                    if country in self.mirrors[scheme]:
+                        self.mirrors[scheme][country].append(mirror)
+                    else:
+                        self.mirrors[scheme][country] = [ mirror ]
+                    #
                 else:
-                    self.mirrors[scheme][country] = [ mirror ]
+                    self.mirrors[scheme] = { country: [ mirror ] }
                 #
-            else:
-                self.mirrors[scheme] = { country: [ mirror ] }
             #
         #
         self.last_data = ''
