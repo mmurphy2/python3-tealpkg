@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Concept of a repository from which software may be obtained.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -18,6 +20,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+# TODO: the Slackware-specific parts of this code need to be moved into distro
+# TODO: also refactor to MVC pattern
+
 import fnmatch
 import logging
 import pathlib
@@ -26,13 +31,13 @@ import time
 
 from urllib.parse import urlparse, urlunparse
 
-from .colorprint import cprint
-from .downloader import Downloader
-from .gpg_verify import GPGVerifier
-from .file_path import FilePath
-from .parse_manifest import parse_manifest
-from .parse_packages import parse_packages
-from .verify_checksum import verify_checksum
+from tealpkg.cli.colorprint import cprint
+from tealpkg.distro.slackware.parse_manifest import parse_manifest
+from tealpkg.distro.slackware.parse_packages import parse_packages
+from tealpkg.distro.slackware.verify_checksum import verify_checksum
+from tealpkg.net.downloader import Downloader
+from tealpkg.net.file_path import FilePath
+from tealpkg.net.gpg_verify import GPGVerifier
 
 
 class Repository:

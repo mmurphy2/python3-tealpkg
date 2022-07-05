@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Abstract file path representation (including verifier).
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,13 +21,16 @@
 # IN THE SOFTWARE.
 
 
+# TODO: refactor for MVC
+# TODO: shorten docstring lines
+
 import logging
 import pathlib
 import time
 
 from urllib.parse import urlparse, urlunparse
 
-from .progress_bar import ProgressBar
+from tealpkg.cli.progress_bar import ProgressBar
 
 
 class FilePath:

@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Implementation of the tealpkg "install" command
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -22,12 +24,12 @@
 import os
 
 
-from ..colorprint import cprint
-from ..pkgtools import Pkgtools
-from ..scripts import ScriptHandler
-from ..search import Searcher
-from ..tagfile import parse_tagfile
-from ..transaction import Transaction
+from tealpkg.cli.colorprint import cprint
+from tealpkg.core.search import Searcher
+from tealpkg.core.transaction import Transaction
+from tealpkg.core.transaction.scripts import ScriptHandler
+from tealpkg.distro.slackware.pkgtools import Pkgtools
+from tealpkg.distro.slackware.tagfile import parse_tagfile
 
 
 def install(args, config):

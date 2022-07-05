@@ -1,7 +1,6 @@
-#
 # Function to parse the Slackware PACKAGES.TXT file.
 #
-# Copyright 2021 Coastal Carolina University
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -26,9 +25,10 @@ import calendar
 import pathlib
 import time
 
-from .package import Package
+from tealpkg.core.package import Package
+from tealpkg.util.size import parse_size
+
 from .pkgtools import splitpkg
-from .size import parse_size
 
 
 def parse_packages(path_to_packages, repoid='', extract_groups=False, strip_path=0):

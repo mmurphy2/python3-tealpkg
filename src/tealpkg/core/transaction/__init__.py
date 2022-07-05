@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Transaction wrapper for installing/upgrading/removing packages.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -18,6 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+# TODO: refactor to MVC
 
 import collections
 import logging
@@ -25,15 +28,18 @@ import os
 import signal
 import sys
 
-from .colorprint import cprint, StatusLine
+from tealpkg.cli.colorprint import cprint
+from tealpkg.cli.progress_bar import ProgressBar
+from tealpkg.cli.status_line import StatusLine
+from tealpkg.cli.transaction_prompt import prompt_install, prompt_remove
+
 from .lock import TransactionLock
-from .progress_bar import ProgressBar
-from .transaction_prompt import prompt_install, prompt_remove
 
 
-# When using SIGHUP protection to guard against an SSH connection (running tealpkg) dropping in the middle of a transaction, we
-# need to set stdout and stderr to /dev/null to prevent exceptions whenever data are written to the streams. This way, the
-# transaction can run to completion, instead of leaving the system in a partially-modified state.
+# When using SIGHUP protection to guard against an SSH connection (running tealpkg) dropping in the
+# middle of a transaction, we need to set stdout and stderr to /dev/null to prevent exceptions
+# whenever data are written to the streams. This way, the transaction can run to completion, instead
+# of leaving the system in a partially-modified state.
 def sighup(signum, frame):
     devnull = os.open(os.devnull, os.O_WRONLY)
     os.dup2(devnull, sys.stdout.fileno())
@@ -125,8 +131,10 @@ class Transaction:
         if status == 0:
             install_map = self.resolve_install(package_pairs)
             if install_map:
-                # Certain packages should be upgraded first. Per the slackware-current UPGRADE.TXT file (as of July 17, 2021), these
-                # are: aaa_glibc-solibs, pkgtools, tar, xz, findutils. We need to do these in reverse order, as the OrderedDict allows
+                # TODO: move this logic into distro
+                # Certain packages should be upgraded first. Per the Slackware 15.0 UPGRADE.TXT
+                # file (as of July 17, 2021), these are: aaa_glibc-solibs, pkgtools, tar, xz,
+                # findutils. We need to do these in reverse order, as the OrderedDict allows
                 # us to move things easily to the beginning of the list.
                 for name in ('findutils', 'xz', 'tar', 'pkgtools', 'aaa_glibc-solibs'):
                     if name in install_map:

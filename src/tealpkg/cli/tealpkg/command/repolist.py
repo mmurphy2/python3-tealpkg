@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Implements the tealpkg "repolist" command
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,7 +21,7 @@
 # IN THE SOFTWARE.
 
 
-from ..colorprint import Table
+from tealpkg.cli.table import Table
 
 
 def repolist(args, config):

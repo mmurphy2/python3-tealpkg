@@ -1,3 +1,4 @@
+# Functions for converting to and from human-readable sizes.
 #
 # Copyright 2021 Coastal Carolina University
 #
@@ -25,8 +26,9 @@ import math
 
 def parse_size(size_string):
     '''
-    Parses a size string, as is found in the PACKAGES.TXT file in a Slackware repository or in the package database
-    files. Returns the number of bytes corresponding to the string (which itself is an approximation of the actual
+    Parses a size string, as is found in the PACKAGES.TXT file in a Slackware
+    repository or in the package database files. Returns the number of bytes
+    corresponding to the string (which itself is an approximation of the actual
     package size).
 
     size_string   --   size string to parse (e.g. 125.2 K)
@@ -74,9 +76,11 @@ def parse_size(size_string):
 
 def friendly_size(size):
     '''
-    For a given size (in bytes), returns a friendly, human-readable string representation. Prefixes are added for sizes
-    in the kibiscale through tebiscale. The word HUGE is simply returned for anything pebiscale or higher (a package
-    of such a size would be impractical, anyway). Decimal values are rounded to 2 digits.
+    For a given size (in bytes), returns a friendly, human-readable string
+    representation. Prefixes are added for sizes in the kibiscale through tebiscale.
+    The word HUGE is simply returned for anything pebiscale or higher (a package
+    of such a size would be impractical, anyway). Decimal values are rounded to
+    2 digits.
 
     size   --   number of bytes for which to make a friendly representation
     '''

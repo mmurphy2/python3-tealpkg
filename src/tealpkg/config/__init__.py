@@ -1,5 +1,6 @@
+# Configuration handler
 #
-# Copyright 2021 Coastal Carolina University
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -20,6 +21,8 @@
 # IN THE SOFTWARE.
 #
 
+# TODO: too many things going on here. Refactoring needed.
+
 import configparser
 import fnmatch
 import logging
@@ -30,9 +33,10 @@ import tempfile
 
 from urllib.parse import urlparse, urlunparse
 
-from .colorprint import clear_status, cprint, get_printer, write_status
-from .compute_time import compute_time
-from .package_db import load_package_db
+from tealpkg.cli.colorprint import clear_status, cprint, get_printer, write_status
+from tealpkg.distro.slackware.package_db import load_package_db
+from tealpkg.util.compute_time import compute_time
+
 from .repository import Repository
 
 

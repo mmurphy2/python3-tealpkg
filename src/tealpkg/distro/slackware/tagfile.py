@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Functions for reading and writing Slackware installation tagfiles.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to

@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Implementation of the tealpkg "info" and "list" commands
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -21,10 +23,10 @@
 
 import textwrap
 
-from ..colorprint import cprint, get_width
-from ..search import Searcher
-from ..size import friendly_size
-from ..tagfile import write_tagfile
+from tealpkg.cli.colorprint import cprint, get_width
+from tealpkg.core.search import Searcher
+from tealpkg.distro.slackware.tagfile import write_tagfile
+from tealpkg.util.size import friendly_size
 
 
 def print_info(name, package_pair):

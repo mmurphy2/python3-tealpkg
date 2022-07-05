@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Subprocess wrapper that can log the output of external commands.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -31,9 +33,10 @@ def log_run(args, quiet=False, log_output=False):
 
     with tempfile.NamedTemporaryFile() as temp:
         with open(temp.name, 'w') as wfh, open(temp.name, 'r') as rfh:
-            # For the subprocess, set start_new_session=True to make a setsid call prior to the exec. This way, the subprocess
-            # doesn't receive SIGHUP if tealpkg is run via SSH and the connection drops.
-            proc = subprocess.Popen(args, stdout=wfh, stderr=subprocess.STDOUT, text=True, bufsize=1, start_new_session=True)
+            # For the subprocess, set start_new_session=True to make a setsid call prior to the exec. This
+            # way, the subprocess doesn't receive SIGHUP if tealpkg is run via SSH and the connection drops.
+            proc = subprocess.Popen(args, stdout=wfh, stderr=subprocess.STDOUT, text=True, bufsize=1, \
+                                    start_new_session=True)
             while proc.poll() is None:
                 if not quiet:
                     sys.stdout.write(rfh.read())

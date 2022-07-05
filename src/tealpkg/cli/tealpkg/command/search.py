@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Implements the tealpkg "search" command
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,8 +21,8 @@
 # IN THE SOFTWARE.
 
 
-from ..colorprint import cprint
-from ..search import Searcher
+from tealpkg.cli.colorprint import cprint
+from tealpkg.core.search import Searcher
 
 
 def search(args, config):

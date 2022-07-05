@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Implements a text-based progress bar on the command line.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -24,17 +26,20 @@ from .colorprint import cprint, get_width
 
 class ProgressBar:
     '''
-    Implements a console-based progress bar, which takes the form of either a spinner or a 20-segment text bar.
+    Implements a console-based progress bar, which takes the form of either a
+    spinner or a 20-segment text bar.
 
     label    --   label to display before the progress information
     quiet    --   suppresses all output if True
     '''
-    def __init__(self, label='', quiet=False, spinner_style='spinner', progress_style='progress', percent_style='percent',
-            label_style='label', success_style='success', error_style='error'):
+    def __init__(self, label='', quiet=False, spinner_style='spinner', progress_style='progress', \
+                 percent_style='percent', label_style='label', success_style='success', \
+                 error_style='error'):
         '''
         Constructor.
 
-        label   --  label to display to the left of the progress bar (may be truncated if necessary)
+        label   --  label to display to the left of the progress bar (may be truncated
+                    if necessary)
         '''
         self.spinner = ('-', '\\', '|', '/')
         self.spindex = 0
@@ -95,8 +100,9 @@ class ProgressBar:
     #
     def print_label(self):
         '''
-        Displays the label, followed by enough spaces to put the progress bar and percentage output on the right side
-        of the screen. The label may be truncated to fit.
+        Displays the label, followed by enough spaces to put the progress bar and
+        percentage output on the right side of the screen. The label may be truncated
+        to fit.
         '''
         if not self.quiet:
             width = get_width()
@@ -108,11 +114,14 @@ class ProgressBar:
     #
     def print_progress(self, progress, total):
         '''
-        Displays current progress. If total is 0, progress is displayed as a spinner. Otherwise, progress is displayed using
-        a 20-segment text progress bar, followed by the actual percentage. The progress display is preceeded by a label, and
-        a carriage return is sent to the terminal at the end of the line, so that the next update overwrites the current one.
+        Displays current progress. If total is 0, progress is displayed as a spinner.
+        Otherwise, progress is displayed using a 20-segment text progress bar, followed
+        by the actual percentage. The progress display is preceeded by a label, and a
+        carriage return is sent to the terminal at the end of the line, so that the
+        next update overwrites the current one.
 
-        progress   --   progress thus far (as a numerical value, such as the number of bytes transferred)
+        progress   --   progress thus far (as a numerical value, such as the number of
+                        bytes transferred)
         total      --   total number of units (e.g. bytes to be transferred) for the job
         '''
         if not self.quiet:
@@ -128,8 +137,9 @@ class ProgressBar:
     #
     def print_complete(self, message='Done', success=True, on_success='Complete', on_failure='Failed'):
         '''
-        Displays a completed operation message, with a success or failure condition. This display consists of the label,
-        a custom message, the success or failure word, followed by a newline.
+        Displays a completed operation message, with a success or failure condition.
+        This display consists of the label, a custom message, the success or failure
+        word, followed by a newline.
 
         message     --  text of the message to display
         success     --  True iff the operation was successful

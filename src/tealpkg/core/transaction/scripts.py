@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Runs post-transaction scripts.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -18,6 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+# TODO: refactor for MVC
+
 
 import logging
 import pathlib
@@ -25,9 +29,9 @@ import subprocess
 import tempfile
 import time
 
-from .colorprint import cprint
-from .filetest import is_executable
-from .run import log_run
+from tealpkg.cli.colorprint import cprint
+from tealpkg.util.filetest import is_executable
+from tealpkg.util.run import log_run
 
 
 class ScriptHandler:

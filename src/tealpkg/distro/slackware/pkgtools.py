@@ -1,4 +1,3 @@
-#
 # Python interface to Slackware pkgtools, plus helper functions related to
 # Slackware package name and version information.
 #
@@ -23,6 +22,9 @@
 # IN THE SOFTWARE.
 
 
+# TODO: refactor for MVC
+
+
 import collections
 import logging
 import os.path
@@ -31,8 +33,8 @@ import shlex
 import subprocess
 import time
 
-from .colorprint import cprint
-from .run import log_run
+from tealpkg.cli.colorprint import cprint
+from tealpkg.util.run import log_run
 
 INSTALLPKG = '/sbin/upgradepkg --install-new'
 UPGRADEPKG = '/sbin/upgradepkg'
@@ -56,7 +58,7 @@ def splitpkg(filename):
     pieces = os.path.basename(filename).split('-')
     if len(pieces) >= 4:
         PackageInfo = collections.namedtuple('PackageInfo', ['name', 'version', 'architecture', 'build'])
-        result = PackageInfo('-'.join(pieces[0:-3], pieces[-3], pieces[-2], pieces[-1]))
+        result = PackageInfo('-'.join(pieces[0:-3]), pieces[-3], pieces[-2], pieces[-1])
     #
 
     return result

@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Parses a string expression of elapsed time.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -21,9 +23,11 @@
 
 def compute_time(timestr):
     '''
-    Returns the total number of seconds represented by the given time string. Raises a ValueError if the time string
-    is invalid. Valid components of time strings are decimal digits (0-9), whitespace, or time unit values. Supported
-    time unit values are:
+    Returns the total number of seconds represented by the given time string. Raises
+    a ValueError if the time string is invalid. Valid components of time strings are
+    decimal digits (0-9), whitespace, or time unit values.
+
+    Supported time unit values are:
 
     y : years
     b : 30-day months

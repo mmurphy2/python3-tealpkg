@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Displays a transaction confirmation prompt.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,8 +21,10 @@
 # IN THE SOFTWARE.
 
 
-from .colorprint import cprint, Table
-from .size import friendly_size
+from tealpkg.util.size import friendly_size
+
+from .colorprint import cprint
+from .table import Table
 
 
 def prompt_confirm():
@@ -38,6 +42,7 @@ def prompt_confirm():
 
     return status
 #
+
 
 def prompt_install(package_pairs, upgrade=False):
     total_download = 0

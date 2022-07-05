@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Color printing using ANSI terminal escape sequences.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -21,7 +23,6 @@
 
 import shutil
 import sys
-import textwrap
 
 
 class ColorPrinter:
@@ -35,14 +36,55 @@ class ColorPrinter:
         return ColorPrinter.__instance
     #
     def __init__(self):
-        self.font_map = { 'reset': 0, 'bold': 1, 'faint': 2, 'italic': 3, 'underline': 4, 'slow-blink': 5, 'fast-blink': 6,
-                'reverse': 7, 'conceal': 8, 'strikethrough': 9, 'primary-font': 10, 'alt1-font': 11, 'alt2-font': 12,
-                'alt3-font': 13, 'alt4-font': 14, 'alt5-font': 15, 'alt6-font': 16, 'alt7-font': 17, 'alt8-font': 18,
-                'alt9-font': 19, 'fraktur': 20, 'bold-off': 21, 'normal': 22, 'italic-off': 23, 'underline-off': 24,
-                'blink-off': 25, 'inverse-off': 27, 'conceal-off': 28, 'strikethrough-off': 29 }
-        self.colormap = { 'black': 0, 'red': 1, 'green': 2, 'yellow': 3, 'blue': 4, 'magenta': 5, 'cyan': 6,
-                'white': 7, 'gray': 8, 'bright-red': 9, 'bright-green': 10, 'bright-yellow': 11,
-                'bright-blue': 12, 'bright-magenta': 13, 'bright-cyan': 14, 'bright-white': 15 }
+        self.font_map = {
+            'reset': 0,
+            'bold': 1,
+            'faint': 2,
+            'italic': 3,
+            'underline': 4,
+            'slow-blink': 5,
+            'fast-blink': 6,
+            'reverse': 7,
+            'conceal': 8,
+            'strikethrough': 9,
+            'primary-font': 10,
+            'alt1-font': 11,
+            'alt2-font': 12,
+            'alt3-font': 13,
+            'alt4-font': 14,
+            'alt5-font': 15,
+            'alt6-font': 16,
+            'alt7-font': 17,
+            'alt8-font': 18,
+            'alt9-font': 19,
+            'fraktur': 20,
+            'bold-off': 21,
+            'normal': 22,
+            'italic-off': 23,
+            'underline-off': 24,
+            'blink-off': 25,
+            'inverse-off': 27,
+            'conceal-off': 28,
+            'strikethrough-off': 29,
+        }
+        self.colormap = {
+            'black': 0,
+            'red': 1,
+            'green': 2,
+            'yellow': 3,
+            'blue': 4,
+            'magenta': 5,
+            'cyan': 6,
+            'white': 7,
+            'gray': 8,
+            'bright-red': 9,
+            'bright-green': 10,
+            'bright-yellow': 11,
+            'bright-blue': 12,
+            'bright-magenta': 13,
+            'bright-cyan': 14,
+            'bright-white': 15,
+        }
         self.styles = { 'default': ('default', 'default', ['reset']) }
         self.use_color = False
         self.color_streams = [ sys.stdout, sys.stderr ]
@@ -83,7 +125,8 @@ class ColorPrinter:
 
         print('\033[0;' + fontcodes + fgcode + bgcode + 'm', end='', file=stream)
     #
-    def cprint(self, *args, style='default', sep=' ', end='\n', stderr=False, file=sys.stdout, flush=False, is_status=False):
+    def cprint(self, *args, style='default', sep=' ', end='\n', stderr=False, file=sys.stdout, \
+               flush=False, is_status=False):
         if self.quiet and not stderr:
             return
         #
@@ -146,149 +189,6 @@ class ColorPrinter:
         #
         self.last_was_status = False
     #
-#
-
-
-class Row:
-    def __init__(self):
-        self.columns = []   # (text, style, align)
-    #
-    def add_column(self, text, style='default', align='left'):
-        self.columns.append( (text, style, align) )
-    #
-    def render_column(self, number, width):
-        if number < len(self.columns):
-            text, style, align = self.columns[number]
-
-            if len(text) > width:
-                text = textwrap.shorten(text, width)
-            #
-
-            padding = max(width - len(text), 0)
-            lpad = 0
-            rpad = padding  # left alignment
-
-            if align == 'right':
-                lpad = padding
-                rpad = 0
-            elif align == 'center':
-                lpad = padding // 2
-                rpad = lpad
-                if padding % 2 == 1:
-                    # Odd width: put the extra space on the right
-                    rpad += 1
-            #####
-
-            cprint(lpad * ' ', text, rpad * ' ', sep='', style=style, end='')
-        #
-    #
-#
-
-
-class Table:
-    def __init__(self, separator_style='default'):
-        self.get_width = ColorPrinter.get_instance().get_width
-        self.columns = []        # column number: { 'width': w, 'spacing': s, 'proportional': p }
-        self.min_width = 0
-        self.rows = []
-        self.separator_style = separator_style
-        self.propcount = 0
-    #
-    def add_column(self, width, spacing=1, proportional=True):
-        self.columns.append({'width': width, 'spacing': spacing, 'proportional': proportional})
-        self.min_width += width + spacing
-        if proportional:
-            self.propcount += 1
-        #
-    #
-    def add_row(self):
-        row = Row()
-        self.rows.append(row)
-        return row
-    #
-    def add_separator(self):
-        self.rows.append('-')
-    #
-    def render(self):
-        width = get_width()
-        if self.propcount > 0 and width > self.min_width:
-            avail = width - self.min_width
-            add = avail // self.propcount
-        #
-
-        # Leave a blank line prior to the start of the table
-        cprint()
-
-        for row in self.rows:
-            if row == '-':
-                cprint(width * '\u2500', style=self.separator_style)
-            else:
-                index = 0
-                for entry in self.columns:
-                    cwidth = entry['width']
-                    spacing = entry['spacing']
-
-                    if entry['proportional']:
-                        cwidth += add
-                    #
-                    row.render_column(index, cwidth)
-                    cprint(' ' * spacing, sep='', end='')
-                    index += 1
-                #
-                cprint()
-        #####
-    #
-#
-
-
-class StatusLine:
-    def __init__(self):
-        self.enabled = False
-        self.quiet = False
-        self.last_height = 0
-        self.last_width = 0
-    #
-    def check_size(self):
-        size = shutil.get_terminal_size()
-        if size.lines != self.last_height or size.columns != self.last_width:
-            self.disable()
-            self.enable()
-        #
-    #
-    def enable(self):
-        if not self.enabled and not self.quiet:
-            self.enabled = True
-            size = shutil.get_terminal_size()
-            self.last_width = size.columns
-            height = size.lines
-            self.last_height = height
-            print('\n\n')   # 2 sacrifical blank lines to be eaten during the split
-            print('\033[0;', height - 2, 'r', sep='', end='')   # split the screen, leaving the bottom 2 lines for status
-            print('\033[', height - 1, ';1H', sep='', end='')   # move to the first line of the status bar
-            cprint('\u2500' * (size.columns), style='separator', end='\n')  # produce the separator
-            print('\033[1F', end='')      # move back up above the status bar
-    #####
-    def disable(self):
-        if self.enabled and not self.quiet:
-            size = shutil.get_terminal_size()
-            print('\033[s', end='')  # save the cursor
-            print('\033[', size.lines - 1, ';1H', sep='', end='') # move to the separator line
-            print(' ' * size.columns, end='')   # clear the separator
-            print('\033[1E', end='')  # move down to the status line
-            print(' ' * size.columns, end='')   # clear the status line
-            print('\033[;r\033[u', end='') # end the split, then restore the cursor
-            self.enabled = False
-    #####
-    def enter(self):
-        if self.enabled and not self.quiet:
-            self.check_size()
-            size = shutil.get_terminal_size()
-            print('\033[', size.lines, ';1H', sep='', end='')   # Move to the status line (bottom line)
-    #####
-    def leave(self):
-        if self.enabled and not self.quiet:
-            print('\033[2F', end='')   # Move up 2 lines (to the line before the status line)
-    #####
 #
 
 

@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Implementation of the tealpkg "check-update" command
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,12 +21,14 @@
 # IN THE SOFTWARE.
 
 
-from ..search import Searcher
+from tealpkg.core.search import Searcher
 
 
 def check_update(args, config):
     config.load_all()
-    searcher = Searcher(config.repolist, config.package_db, config.file_map, config.exclude_file, args.include, args.exclude)
+    searcher = Searcher(config.repolist, config.package_db, config.file_map, config.exclude_file, \
+        args.include, args.exclude)
+    #
     status = 100 if len(searcher.find_all_upgrades()) > 0 else 0
     return status
 #

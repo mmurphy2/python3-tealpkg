@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Transaction locking code.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -40,6 +42,7 @@ class TransactionLock:
                 result = True
             else:
                 # See if we have a stale lock
+                # TODO: improve this logic
                 procpath = pathlib.PosixPath('/proc').joinpath(str(check_pid))
                 if procpath.exists():
                     data = ''

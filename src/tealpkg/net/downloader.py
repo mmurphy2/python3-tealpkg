@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# PyCURL-based file downloader
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -18,14 +20,19 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+
+# TODO: refactor for MVC
+# TODO: consider dropping PyCURL dependency and using Python native code for downloading
+
+
 import pathlib
 import pycurl
 import traceback
 
 from urllib.parse import urlparse
 
-from .colorprint import cprint
-from .progress_bar import ProgressBar
+from tealpkg.cli.colorprint import cprint
+from tealpkg.cli.progress_bar import ProgressBar
 
 
 class Downloader:

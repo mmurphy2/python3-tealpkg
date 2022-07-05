@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Individual commands in the tealpkg command-line interface
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -23,7 +25,6 @@ import os
 
 from .check_update import check_update
 from .clean import clean
-from ..colorprint import cprint
 from .info_list import info_list
 from .install import install
 from .provides import provides
@@ -31,6 +32,8 @@ from .remove import remove
 from .repolist import repolist
 from .search import search
 from .sync import sync
+
+from tealpkg.cli.colorprint import cprint
 
 
 COMMAND_MAP = {   # command: (function, needs_root)

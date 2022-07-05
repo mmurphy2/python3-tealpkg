@@ -1,4 +1,3 @@
-#
 # Function for parsing the Slackware MANIFEST.bz2 file.
 #
 # Copyright 2021-2022 Coastal Carolina University
@@ -21,6 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+
 import bz2
 import pathlib
 
@@ -32,6 +32,7 @@ def parse_manifest(path_to_manifest):
     file_map = {}
 
     info = None
+    total = 0 ###
 
     with bz2.open(path_to_manifest, 'rt') as fh:
         line = fh.readline()
@@ -50,11 +51,11 @@ def parse_manifest(path_to_manifest):
                 if info and (len(lparts) >= 6):
                     entry = {}
                     entry['permissions'] = lparts[0]
-                    entry['owner'] = lparts[1].split('/')[0]
-                    entry['group'] = lparts[1].split('/')[1]
+                    entry['owner'], entry['group'] = lparts[1].split('/')
                     entry['size'] = lparts[2]
                     entry['date'] = lparts[3]
                     entry['time'] = lparts[4]
+
                     path = '/' + line.partition(entry['time'])[2].strip()
 
                     if path != '/./' and not path.startswith('/install/'):
@@ -71,5 +72,14 @@ def parse_manifest(path_to_manifest):
             line = fh.readline()
         #
     #
+    print(total)
     return (manifest, file_map)
+#
+
+
+# Unit testing code
+if __name__ == '__main__':
+    import sys
+
+    manifest, file_map = parse_manifest(sys.argv[1])
 #

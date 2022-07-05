@@ -1,4 +1,6 @@
-# Copyright 2021 Coastal Carolina University
+# Verifies a file using CHECKSUMS.md5.
+#
+# Copyright 2021-2022 Coastal Carolina University
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to
@@ -19,11 +21,14 @@
 # IN THE SOFTWARE.
 
 
+# TODO: refactor for MVC
+# TODO: probably good to load the checksums into a data structure instead of hitting the file every time
+
 import hashlib
 import logging
 import pathlib
 
-from .colorprint import cprint
+from tealpkg.cli.colorprint import cprint
 
 
 def verify_checksum(path_to_checksums, path_to_check, entry_name):

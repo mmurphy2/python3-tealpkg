@@ -1,4 +1,3 @@
-#
 # Function for loading the system installed package database, which is normally
 # the directory /var/lib/pkgtools.
 #
@@ -23,12 +22,15 @@
 # IN THE SOFTWARE.
 #
 
+# TODO: refactor for MVC
+
 import pathlib
 
-from .colorprint import cprint
-from .package import Package
+from tealpkg.cli.colorprint import cprint
+from tealpkg.core.package import Package
+from tealpkg.util.size import parse_size
+
 from .pkgtools import splitpkg
-from .size import parse_size
 
 
 def load_package_db(path):
