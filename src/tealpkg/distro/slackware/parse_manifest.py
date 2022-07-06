@@ -32,33 +32,31 @@ def parse_manifest(path_to_manifest):
     file_map = {}
 
     info = None
-    total = 0 ###
 
     with bz2.open(path_to_manifest, 'rt') as fh:
         line = fh.readline()
         while line:
-            if line.startswith('|| '):
-                lparts = line.split()
-                if len(lparts) == 3:
-                    pkgfile = pathlib.PurePosixPath(lparts[2])
-                    info = splitpkg(pkgfile.stem)
-                    if info:
-                        manifest[info.name] = {}
-                    #
+            fields = line.split(maxsplit=5)
+            if len(fields) == 3 and fields[0] == '||' and fields[1] == 'Package:':
+                pkgfile = pathlib.PurePosixPath(fields[2])
+                info = splitpkg(pkgfile.stem)
+                if info:
+                    manifest[info.name] = {}
                 #
             else:
-                lparts = line.split()
-                if info and (len(lparts) >= 6):
-                    entry = {}
-                    entry['permissions'] = lparts[0]
-                    entry['owner'], entry['group'] = lparts[1].split('/')
-                    entry['size'] = lparts[2]
-                    entry['date'] = lparts[3]
-                    entry['time'] = lparts[4]
-
-                    path = '/' + line.partition(entry['time'])[2].strip()
-
+                if info and len(fields) == 6:
+                    path = '/' + fields[5].rstrip()
                     if path != '/./' and not path.startswith('/install/'):
+                        owner, group = fields[1].split('/')
+                        entry = {
+                            'permissions': fields[0],
+                            'owner': owner,
+                            'group': group,
+                            'size': fields[2],
+                            'date': fields[3],
+                            'time': fields[4],
+                        }
+
                         manifest[info.name][path] = entry
 
                         if path in file_map:
@@ -72,7 +70,6 @@ def parse_manifest(path_to_manifest):
             line = fh.readline()
         #
     #
-    print(total)
     return (manifest, file_map)
 #
 
@@ -80,6 +77,9 @@ def parse_manifest(path_to_manifest):
 # Unit testing code
 if __name__ == '__main__':
     import sys
+    import time
 
     manifest, file_map = parse_manifest(sys.argv[1])
+    print(manifest)
+    print(file_map)
 #
