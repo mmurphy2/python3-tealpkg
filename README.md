@@ -3,6 +3,15 @@
 TealPkg: Package management frontend for [Slackware Linux](http://www.slackware.com)
 
 
+## Currently Broken
+
+After doing some testing and optimization work, it was discovered that the current design of this code
+uses a substantial amount of memory and has some performance issues (and a few bugs). As such, a major
+rewrite is underway, and the code here should be considered broken until the rewrite is finished. In
+the meantime, a Slackware package and sources for the previous working version are available at
+[https://ww2.coastal.edu/mmurphy2/repo](https://www.coastal.edu/mmurphy2/repo).
+
+
 ## About this Code
 
 During the summer of 2021, we completed a feasibility analysis of Slackware Linux as a potential distribution
