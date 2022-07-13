@@ -22,55 +22,59 @@
 
 
 import bz2
+import os
 import pathlib
+import sqlite3
 
 from .pkgtools import splitpkg
 
 
-def parse_manifest(path_to_manifest):
+def parse_manifest(path_to_manifest, output_database_path):
     manifest = {}
     file_map = {}
 
     info = None
 
+    if os.path.lexists(output_database_path):
+        os.remove(output_database_path)
+    #
+
+    db = sqlite3.connect(output_database_path)
+    cursor = db.cursor()
+
+    cursor.execute('''CREATE TABLE 'manifest' (
+        'package' TEXT,
+        'path' TEXT,
+        'owner' TEXT,
+        'group' TEXT,
+        'permissions' TEXT,
+        'size' TEXT,
+        'date' TEXT,
+        'time' TEXT);''')
+    #
+    db.commit()
+
     with bz2.open(path_to_manifest, 'rt') as fh:
-        line = fh.readline()
-        while line:
+        for line in fh:
             fields = line.split(maxsplit=5)
             if len(fields) == 3 and fields[0] == '||' and fields[1] == 'Package:':
                 pkgfile = pathlib.PurePosixPath(fields[2])
                 info = splitpkg(pkgfile.stem)
-                if info:
-                    manifest[info.name] = {}
-                #
             else:
                 if info and len(fields) == 6:
                     path = '/' + fields[5].rstrip()
                     if path != '/./' and not path.startswith('/install/'):
                         owner, group = fields[1].split('/')
-                        entry = {
-                            'permissions': fields[0],
-                            'owner': owner,
-                            'group': group,
-                            'size': fields[2],
-                            'date': fields[3],
-                            'time': fields[4],
-                        }
-
-                        manifest[info.name][path] = entry
-
-                        if path in file_map:
-                            file_map[path].append(info.name)
-                        else:
-                            file_map[path] = [ info.name ]
+                        cursor.execute('''INSERT OR REPLACE INTO "manifest" VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
+                                       (info.name, path, owner, group, fields[0], fields[2], fields[3], fields[4]))
                         #
                     #
                 #
             #
-            line = fh.readline()
         #
     #
-    return (manifest, file_map)
+    db.commit()
+    db.close()
 #
 
 
@@ -79,7 +83,9 @@ if __name__ == '__main__':
     import sys
     import time
 
-    manifest, file_map = parse_manifest(sys.argv[1])
-    print(manifest)
-    print(file_map)
+    start = time.time()
+    parse_manifest(sys.argv[1], sys.argv[2])
+    end = time.time()
+
+    print(end - start)
 #
