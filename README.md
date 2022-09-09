@@ -3,6 +3,15 @@
 TealPkg: Package management frontend for [Slackware Linux](http://www.slackware.com)
 
 
+## Abandoned (Again)
+
+I have done some additional testing and evaluation work in the desktop and appliance space, for which
+this code was re-targeted. Based on my research objective to focus on security and privacy, I have
+switched to [Alpine Linux](https://www.alpinelinux.org/) and have found it suitable for use as a
+desktop operating system. As a result, I have abandoned Slackware for use in the desktop space, and
+I am no longer working on improving this code.
+
+
 ## Currently Broken
 
 After doing some testing and optimization work, it was discovered that the current design of this code
